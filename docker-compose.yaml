@@ -1,23 +1,24 @@
 version: "3"
 services:
-#  mysql-local:
-#    build: ./mysql/
-#    image: mysql-local
-#    command: service mysqld start
-#    ports:
-#      - "3306:3306"
-#    env_file:
-#      - ./mysql/mysql.env
+  devsql:
+    build: ./mysql/
+    image: devsql
+    container_name: devsql
+    ports:
+      - "3306:3306"
+    env_file:
+      - ./mysql/mysql.env
+    tty: true
   app:
     build: ./app/
     image: app
+    container_name: app
     ports:
       - "80:80"
     volumes:
-      - type: bind
-          source: ~/Netsertive/Repo
-          target: /var/www
+      - ~/Netsertive/Repo:/var/www
     env_file:
       - ./app/app.env
-#    depends_on:
-#      - mysql-local
+    depends_on:
+      - devsql
+    tty: true

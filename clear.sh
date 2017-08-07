@@ -2,10 +2,12 @@
 
 images=$(docker ps -aq)
 echo "Existing containers:"
-echo "$images"
 if [[ ! -z "$images" ]]; then
+    echo "$images"
+    echo "Stop running containers ..."
+    docker stop ${images}
     echo "Removing ..."
     docker rm ${images}
 else
-    echo "Nothing to remove"
+    echo "Empty list. Nothing to remove"
 fi

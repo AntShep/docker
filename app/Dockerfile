@@ -47,4 +47,4 @@ WORKDIR /var/www/
 EXPOSE 80
 
 RUN yum install -y redis php56w-pecl-redis
-CMD sh -c "redis-server &"; nginx; httpd; /bin/bash
+CMD sh -c "redis-server &"; httpd; /bin/bash
