@@ -2,16 +2,15 @@
 OPTIONS=$@
 if [[ $OPTIONS == *"-c"* || $OPTIONS == *"-r"* ]]; then
     echo "Clearing containers..."
-    docker network rm local
     ./clear.sh
 fi
 
 if [[ $OPTIONS == *"-r"* ]]; then
     echo "Removing images..."
     docker rmi app devsql
-    ./clear.sh
 fi
 
+docker network rm local
 docker network create local
 
 docker build --rm -t app ./app/
