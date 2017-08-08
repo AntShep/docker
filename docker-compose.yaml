@@ -6,6 +6,8 @@ services:
     container_name: devsql
     ports:
       - "3306:3306"
+    volumes:
+      - ~/Projects/data:/home/data
     env_file:
       - ./mysql/mysql.env
     tty: true

@@ -1,19 +1,17 @@
 FROM mysql:5.6
 
 RUN apt-get update -y
+RUN apt-get install -y less
 
-COPY ./dump/createDatabase.sql /tmp/
-COPY ./dump/grants.sql /tmp/
+RUN mysqld_safe --skip-grant-tables &
 
 WORKDIR /home/
 
-RUN cat /tmp/createDatabase.sql | sed 's/${env}/dev/g' > createDatabase2.sql
-RUN cat /tmp/grants.sql |sed 's/${env}/dev/g' > grants2.sql
+RUN mkdir data
 
-RUN apt-get clean all && rm -rf /tmp/*
+COPY ./dump/setup.sh .
+RUN chmod 760 setup.sh
 
-CMD sh -c "service mysql start"; /bin/bash
+RUN apt-get clean all
 
-# Execute in runtime mode:
-# cat createDatabase2.sql | mysql -uroot -p
-# cat grants2.sql | mysql -uroot -p
+CMD sh -c "service mysql start && ./setup.sh"; /bin/bash

@@ -1,72 +1,21 @@
 #!/bin/bash
-echo "Start launch process... (use '-h' flag to see available options)"
-
 OPTIONS=$@
-if [[ $OPTIONS == *"-h"* ]]; then
-  echo "List of available options:"
-  echo "-b              Run docker-compose command with the '--build' flag"
-  echo "-c              Clear all related containers"
-  echo "-a              Activate all options"
-  exit
+if [[ $OPTIONS == *"-c"* || $OPTIONS == *"-r"* ]]; then
+    echo "Clearing containers..."
+    docker network rm local
+    ./clear.sh
 fi
 
-OPTIONS=$@
-if [[ $OPTIONS == *"-a"* ]]; then
-    OPTIONS='-b -c'
+if [[ $OPTIONS == *"-r"* ]]; then
+    echo "Removing images..."
+    docker rmi app devsql
+    ./clear.sh
 fi
 
-if [[ $OPTIONS == *"-c"* ]]; then
-    echo "Clear all related containers..."
-    echo "docker-compose down"
-    docker-compose down
-fi
+docker network create local
 
-if [[ $OPTIONS == *"-b"* ]]; then
-    echo "Start build process..."
-    echo "docker-compose up --build -d --force-recreate"
-    docker-compose up --build -d --force-recreate
-else
-    echo "docker-compose up -d --force-recreate"
-    docker-compose up -d --force-recreate
-fi
+docker build --rm -t app ./app/
+docker run -it -d --name app -p 80:80 --net local --env-file ./app/app.env --mount type=bind,source=/Users/ashepotko/Netsertive/Repo,destination=/var/www app
 
-echo "Start build process..."
-docker attach app
-
-
-#
-#
-#echo "Start launch process... (use '-h' flag to see available options)"
-#
-#OPTIONS=$@
-#if [[ $OPTIONS == *"-h"* ]]; then
-#  echo "List of available options:"
-#  echo "-c              Clear/Remove all existing containers"
-#  echo "-b              Build existing images"
-#  echo "-a              Activate all options"
-#  exit
-#fi
-#
-#if [[ $OPTIONS == *"-a"* ]]; then
-#    OPTIONS='-c -b'
-#fi
-#
-#if [[ $OPTIONS == *"-c"* ]]; then
-#    echo "Clearing of existing containers ..."
-#    ./clear.sh
-#fi
-#
-#if [[ $OPTIONS == *"-b"* ]]; then
-#    echo "Build the 'app' image..."
-#    docker build -t app ./app/
-#fi
-#
-#echo "Run the 'app' container"
-#docker run -it -d --name app -p 80:80 --env-file ./app/app.env --mount type=bind,source=/Users/ashepotko/Netsertive/Repo,destination=/var/www app
-#
-#docker build --rm -t devsql ./mysql/
-#docker run -it --rm --name devsql -p 3306:3306 --env-file ./mysql/mysql.env devsql
-
-#
-#echo "Run the 'mysql' container"
-#docker run -it -d --name mysql -p 3306:3306 --env-file ./mysql/mysql.env mysql
+docker build --rm -t devsql ./mysql/
+docker run -it -d --name devsql -p 3306:3306 --net local --env-file ./mysql/mysql.env --mount type=bind,source=/Users/ashepotko/Projects/data,destination=/home/data devsql
