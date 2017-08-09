@@ -41,6 +41,8 @@ ADD httpd/conf.d/* /etc/httpd/conf.d/
 RUN yum clean all && rm -rf /tmp/*
 
 ADD php/php.ini /etc/php.ini
+RUN pecl install imagick
+RUN echo "extension=imagick.so" > /etc/php.d/imagick.ini
 
 WORKDIR /var/www/
 
