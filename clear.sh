@@ -6,7 +6,7 @@ if [[ ! -z "$images" ]]; then
     echo "$images"
     echo "Stop running containers ..."
     docker stop ${images}
-    echo "Removing ..."
+    echo "Removing existing containers..."
     docker rm ${images}
 else
     echo "Empty list. Nothing to remove"
