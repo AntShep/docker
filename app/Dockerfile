@@ -44,6 +44,22 @@ ADD php/php.ini /etc/php.ini
 RUN pecl install imagick
 RUN echo "extension=imagick.so" > /etc/php.d/imagick.ini
 
+# Install Java JDK (jdk-8u151-linux-x64)
+WORKDIR "~/"
+RUN wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u151-b12/e758a0de34e24606bca991d704f6dcbf/jdk-8u151-linux-x64.rpm"
+RUN yum localinstall -y jdk-8u151-linux-x64.rpm
+RUN rm ./jdk-8u151-linux-x64.rpm
+
+# Install Maven (apache-maven-3.5.2)
+WORKDIR /usr/local
+RUN wget http://www-eu.apache.org/dist/maven/maven-3/3.5.2/binaries/apache-maven-3.5.2-bin.tar.gz
+RUN tar xzf apache-maven-3.5.2-bin.tar.gz
+RUN ln -s apache-maven-3.5.2  maven
+RUN rm -f ./apache-maven-3.5.2-bin.tar.gz
+ADD java/maven.settings.xml apache-maven-3.5.2/.m2/settings.xml
+ENV M2_HOME=/usr/local/maven
+ENV PATH=${M2_HOME}/bin:${PATH}
+
 WORKDIR /var/www/
 
 EXPOSE 80
